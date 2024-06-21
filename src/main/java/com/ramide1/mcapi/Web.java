@@ -1,5 +1,6 @@
 package com.ramide1.mcapi;
 
+import java.util.List;
 import org.bukkit.Bukkit;
 import io.javalin.Javalin;
 
@@ -16,13 +17,23 @@ public class Web {
                 ctx.result("false");
             } else {
                 String command = ctx.formParam("command");
+                JsonResponse jsonResponse = new JsonResponse("Error", true);
                 try {
+                    CommandResponse commandResponse = new CommandResponse();
                     Bukkit.getScheduler().runTask(plugin, () -> {
-                        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
+                        Bukkit.getServer().dispatchCommand(commandResponse, command);
+                        List<String> messages = commandResponse.getMessages();
+                        if (!messages.isEmpty()) {
+                            jsonResponse.setResponse(String.join("\n", messages));
+                            jsonResponse.setError(false);
+                        } else {
+                            jsonResponse.setResponse("No command response");
+                        }
+                        ctx.json(jsonResponse);
                     });
-                    ctx.result("true");
                 } catch (Exception e) {
-                    ctx.result("false");
+                    jsonResponse.setResponse(e.getMessage());
+                    ctx.json(jsonResponse);
                 }
             }
         });

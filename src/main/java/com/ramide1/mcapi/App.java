@@ -3,6 +3,7 @@ package com.ramide1.mcapi;
 import java.io.File;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.ChatColor;
+
 public class App extends JavaPlugin {
     String pluginName = "Minecraft API";
     File config;
