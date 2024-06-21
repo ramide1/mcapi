@@ -13,5 +13,9 @@ Execute commands remotely using a simple HTTP POST request. Here's an example us
 ```bash
 curl -X POST http://serverip/command -d "command=console command" -d "password=server password"
 ```
+# Endpoints
+- command: Execute a console command
+- players/count: Get online players count
+- players/list: Get online players list
 # Contributing
 We welcome contributions from the community. If you have ideas or want to contribute, please feel free to open an issue or submit a pull request.
