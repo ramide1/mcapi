@@ -1,6 +1,5 @@
 package com.ramide1.mcapi;
 
-import java.util.List;
 import org.bukkit.Bukkit;
 import io.javalin.Javalin;
 
@@ -13,29 +12,50 @@ public class Web {
         webApp = Javalin.create().start(port);
         webApp.get("/", ctx -> ctx.result("Minecraft API enabled!"));
         webApp.post("/command", ctx -> {
+            JsonResponse jsonResponse = new JsonResponse("Error", true);
             if (!password.equals(ctx.formParam("password"))) {
-                ctx.result("false");
+                jsonResponse.setResponse("Incorrect password");
             } else {
-                String command = ctx.formParam("command");
-                JsonResponse jsonResponse = new JsonResponse("Error", true);
                 try {
-                    CommandResponse commandResponse = new CommandResponse();
+                    String command = ctx.formParam("command");
                     Bukkit.getScheduler().runTask(plugin, () -> {
-                        Bukkit.getServer().dispatchCommand(commandResponse, command);
-                        List<String> messages = commandResponse.getMessages();
-                        if (!messages.isEmpty()) {
-                            jsonResponse.setResponse(String.join("\n", messages));
-                            jsonResponse.setError(false);
-                        } else {
-                            jsonResponse.setResponse("No command response");
-                        }
-                        ctx.json(jsonResponse);
+                        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
                     });
+                    jsonResponse.setResponse("Command success");
+                    jsonResponse.setError(false);
                 } catch (Exception e) {
                     jsonResponse.setResponse(e.getMessage());
-                    ctx.json(jsonResponse);
                 }
             }
+            ctx.json(jsonResponse);
+        });
+        webApp.post("/players/count", ctx -> {
+            JsonResponse jsonResponse = new JsonResponse("Error", true);
+            if (!password.equals(ctx.formParam("password"))) {
+                jsonResponse.setResponse("Incorrect password");
+            } else {
+                try {
+                    jsonResponse.setResponse(Integer.toString(Bukkit.getOnlinePlayers().size()));
+                    jsonResponse.setError(false);
+                } catch (Exception e) {
+                    jsonResponse.setResponse(e.getMessage());
+                }
+            }
+            ctx.json(jsonResponse);
+        });
+        webApp.post("/players/list", ctx -> {
+            JsonResponse jsonResponse = new JsonResponse("Error", true);
+            if (!password.equals(ctx.formParam("password"))) {
+                jsonResponse.setResponse("Incorrect password");
+            } else {
+                try {
+                    jsonResponse.setResponse(Bukkit.getOnlinePlayers().toString());
+                    jsonResponse.setError(false);
+                } catch (Exception e) {
+                    jsonResponse.setResponse(e.getMessage());
+                }
+            }
+            ctx.json(jsonResponse);
         });
     }
 
