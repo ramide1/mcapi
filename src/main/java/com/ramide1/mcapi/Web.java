@@ -19,6 +19,7 @@ public class Web {
                 staticFiles.precompress = false;
                 staticFiles.aliasCheck = null;
             });
+            config.showJavalinBanner = false;
         }).start(port);
         webApp.post("/command", ctx -> {
             JsonResponse jsonResponse = new JsonResponse("Error", true);
